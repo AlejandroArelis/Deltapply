@@ -1,0 +1,6 @@
+@Deltapply_HostAddress = http://localhost:5023
+
+GET {{Deltapply_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
