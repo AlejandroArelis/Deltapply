@@ -8,6 +8,8 @@ namespace Deltapply.Models
         public int Id { get; set; }
         [Required(ErrorMessage = "El kanji debe contener al menos un nombre")]
         public List<string> Names { get; set; }
+        [Required(ErrorMessage = "El kanji debe tener un simbolo")]
+        public char Char { get; set; }
 
         [Required(ErrorMessage = "El kaji debe contener al menos una pronunciación Kun")]
         public List<string> Kun { get; set; }
@@ -23,5 +25,6 @@ namespace Deltapply.Models
         public int Jlpt { get; set; }
         public bool Checked { get; set; } = false;
 
+        public List<Example> Examples { get; set; }
     }
 }
