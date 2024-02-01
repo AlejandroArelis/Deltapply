@@ -1,28 +1,29 @@
 ﻿using Deltapply.Data;
-using Deltapply.Models;
+using Deltapply.Models.Nihongo.Kanjis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace Deltapply.Controllers
+namespace Deltapply.Controllers.Nihongo
 {
-    [Route("api/[controller]")]
+    [Route("api/nihongo/[controller]")]
     [ApiController]
     public class KanjiController : ControllerBase
     {
         private readonly ApplicationDBContext _dbContext;
 
-        public KanjiController(ApplicationDBContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
+        public KanjiController(ApplicationDBContext dbContext) => _dbContext = dbContext;
 
         // GET: api/<KanjiController>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var data = await _dbContext.Kanjis.ToListAsync();
+            var data = await _dbContext.Kanjis
+                .Include(k => k.Names)
+                .Include(k => k.Kuns)
+                .Include(k => k.Ons)
+                .Include(k => k.Meanings)
+                .Include(k => k.Examples)
+                .ToListAsync();
             return Ok(data);
         }
 
@@ -30,7 +31,13 @@ namespace Deltapply.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var kanji = await _dbContext.Kanjis.FindAsync(id);
+            var kanji = await _dbContext.Kanjis
+                .Include(k => k.Names)
+                .Include(k => k.Kuns)
+                .Include(k => k.Ons)
+                .Include(k => k.Meanings)
+                .Include(k => k.Examples)
+                .FirstOrDefaultAsync(k => k.Id == id);
 
             if (kanji == null)
             {

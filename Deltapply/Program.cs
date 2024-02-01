@@ -1,5 +1,7 @@
 using Deltapply.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,5 +36,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseCors("AllowOrigin");
+
+app.UseStaticFiles();
 
 app.Run();
