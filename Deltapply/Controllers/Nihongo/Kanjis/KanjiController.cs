@@ -3,7 +3,7 @@ using Deltapply.Models.Nihongo.Kanjis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Deltapply.Controllers.Nihongo
+namespace Deltapply.Controllers.Nihongo.Kanjis
 {
     [Route("api/nihongo/[controller]")]
     [ApiController]

@@ -15,10 +15,10 @@ namespace Deltapply.Models.Nihongo.Kanjis
         public int Successes { get; set; } = 0;
         public int Attempts { get; set; } = 0;
 
-        public List<KanjiMeaning>? Meanings { get; set; }
         public List<Name>? Names { get; set; }
         public List<Kun>? Kuns { get; set; }
         public List<On>? Ons { get; set; }
         public List<Example>? Examples { get; set; }
+        public List<KanjiMeaning>? Meanings { get; set; }
     }
 }
