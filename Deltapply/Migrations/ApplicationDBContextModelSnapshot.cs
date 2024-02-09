@@ -47,6 +47,32 @@ namespace Deltapply.Migrations
                     b.ToTable("Examples");
                 });
 
+            modelBuilder.Entity("Deltapply.Models.Nihongo.Kanjis.Examples.ExampleChar", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ExampleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExampleId");
+
+                    b.ToTable("Chars");
+                });
+
             modelBuilder.Entity("Deltapply.Models.Nihongo.Kanjis.Examples.ExampleMeaning", b =>
                 {
                     b.Property<int>("Id")
@@ -58,16 +84,40 @@ namespace Deltapply.Migrations
                     b.Property<int>("ExampleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MeaningId")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ExampleId");
 
-                    b.HasIndex("MeaningId");
-
                     b.ToTable("ExamplesMeanings");
+                });
+
+            modelBuilder.Entity("Deltapply.Models.Nihongo.Kanjis.Examples.ExampleType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Types");
                 });
 
             modelBuilder.Entity("Deltapply.Models.Nihongo.Kanjis.Kanji", b =>
@@ -114,14 +164,17 @@ namespace Deltapply.Migrations
                     b.Property<int>("KanjiId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MeaningId")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("KanjiId");
-
-                    b.HasIndex("MeaningId");
 
                     b.ToTable("KanjisMeanings");
                 });
@@ -204,34 +257,26 @@ namespace Deltapply.Migrations
                     b.ToTable("Ons");
                 });
 
-            modelBuilder.Entity("Deltapply.Models.Nihongo.Meaning", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Meanings");
-                });
-
             modelBuilder.Entity("Deltapply.Models.Nihongo.Kanjis.Examples.Example", b =>
                 {
-                    b.HasOne("Deltapply.Models.Nihongo.Kanjis.Kanji", null)
+                    b.HasOne("Deltapply.Models.Nihongo.Kanjis.Kanji", "Kanji")
                         .WithMany("Examples")
                         .HasForeignKey("KanjiId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Kanji");
+                });
+
+            modelBuilder.Entity("Deltapply.Models.Nihongo.Kanjis.Examples.ExampleChar", b =>
+                {
+                    b.HasOne("Deltapply.Models.Nihongo.Kanjis.Examples.Example", "Example")
+                        .WithMany("Chars")
+                        .HasForeignKey("ExampleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Example");
                 });
 
             modelBuilder.Entity("Deltapply.Models.Nihongo.Kanjis.Examples.ExampleMeaning", b =>
@@ -242,15 +287,7 @@ namespace Deltapply.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Deltapply.Models.Nihongo.Meaning", "Meaning")
-                        .WithMany("Examples")
-                        .HasForeignKey("MeaningId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Example");
-
-                    b.Navigation("Meaning");
                 });
 
             modelBuilder.Entity("Deltapply.Models.Nihongo.Kanjis.KanjiMeaning", b =>
@@ -261,15 +298,7 @@ namespace Deltapply.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Deltapply.Models.Nihongo.Meaning", "Meaning")
-                        .WithMany("Kanjis")
-                        .HasForeignKey("MeaningId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Kanji");
-
-                    b.Navigation("Meaning");
                 });
 
             modelBuilder.Entity("Deltapply.Models.Nihongo.Kanjis.Kun", b =>
@@ -301,6 +330,8 @@ namespace Deltapply.Migrations
 
             modelBuilder.Entity("Deltapply.Models.Nihongo.Kanjis.Examples.Example", b =>
                 {
+                    b.Navigation("Chars");
+
                     b.Navigation("Meanings");
                 });
 
@@ -315,13 +346,6 @@ namespace Deltapply.Migrations
                     b.Navigation("Names");
 
                     b.Navigation("Ons");
-                });
-
-            modelBuilder.Entity("Deltapply.Models.Nihongo.Meaning", b =>
-                {
-                    b.Navigation("Examples");
-
-                    b.Navigation("Kanjis");
                 });
 #pragma warning restore 612, 618
         }

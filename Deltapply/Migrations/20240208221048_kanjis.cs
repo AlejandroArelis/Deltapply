@@ -5,7 +5,7 @@
 namespace Deltapply.Migrations
 {
     /// <inheritdoc />
-    public partial class kanji : Migration
+    public partial class kanjis : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,7 +29,7 @@ namespace Deltapply.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Meanings",
+                name: "Types",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -39,7 +39,7 @@ namespace Deltapply.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Meanings", x => x.Id);
+                    table.PrimaryKey("PK_Types", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -57,6 +57,27 @@ namespace Deltapply.Migrations
                     table.PrimaryKey("PK_Examples", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Examples_Kanjis_KanjiId",
+                        column: x => x.KanjiId,
+                        principalTable: "Kanjis",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KanjisMeanings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    KanjiId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KanjisMeanings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_KanjisMeanings_Kanjis_KanjiId",
                         column: x => x.KanjiId,
                         principalTable: "Kanjis",
                         principalColumn: "Id",
@@ -127,27 +148,22 @@ namespace Deltapply.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "KanjisMeanings",
+                name: "Chars",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    KanjiId = table.Column<int>(type: "int", nullable: false),
-                    MeaningId = table.Column<int>(type: "int", nullable: false)
+                    ExampleId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_KanjisMeanings", x => x.Id);
+                    table.PrimaryKey("PK_Chars", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_KanjisMeanings_Kanjis_KanjiId",
-                        column: x => x.KanjiId,
-                        principalTable: "Kanjis",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_KanjisMeanings_Meanings_MeaningId",
-                        column: x => x.MeaningId,
-                        principalTable: "Meanings",
+                        name: "FK_Chars_Examples_ExampleId",
+                        column: x => x.ExampleId,
+                        principalTable: "Examples",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -159,7 +175,8 @@ namespace Deltapply.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExampleId = table.Column<int>(type: "int", nullable: false),
-                    MeaningId = table.Column<int>(type: "int", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -170,13 +187,12 @@ namespace Deltapply.Migrations
                         principalTable: "Examples",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExamplesMeanings_Meanings_MeaningId",
-                        column: x => x.MeaningId,
-                        principalTable: "Meanings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chars_ExampleId",
+                table: "Chars",
+                column: "ExampleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Examples_KanjiId",
@@ -189,19 +205,9 @@ namespace Deltapply.Migrations
                 column: "ExampleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExamplesMeanings_MeaningId",
-                table: "ExamplesMeanings",
-                column: "MeaningId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_KanjisMeanings_KanjiId",
                 table: "KanjisMeanings",
                 column: "KanjiId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_KanjisMeanings_MeaningId",
-                table: "KanjisMeanings",
-                column: "MeaningId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Kuns_KanjiId",
@@ -223,6 +229,9 @@ namespace Deltapply.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Chars");
+
+            migrationBuilder.DropTable(
                 name: "ExamplesMeanings");
 
             migrationBuilder.DropTable(
@@ -238,10 +247,10 @@ namespace Deltapply.Migrations
                 name: "Ons");
 
             migrationBuilder.DropTable(
-                name: "Examples");
+                name: "Types");
 
             migrationBuilder.DropTable(
-                name: "Meanings");
+                name: "Examples");
 
             migrationBuilder.DropTable(
                 name: "Kanjis");

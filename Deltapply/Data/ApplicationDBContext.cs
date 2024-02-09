@@ -21,17 +21,16 @@ namespace Deltapply.Data
         public DbSet<Kun> Kuns { get; set; }
         public DbSet<On> Ons { get; set; }
         public DbSet<Name> Names { get; set; }
-        public DbSet<Meaning> Meanings { get; set; }
         public DbSet<Example> Examples { get; set; }
-
-        //Muchos a muchos
         public DbSet<KanjiMeaning> KanjisMeanings { get; set; }
         public DbSet<ExampleMeaning> ExamplesMeanings { get; set; }
+        public DbSet<ExampleType> Types { get; set; }
+        public DbSet<ExampleChar> Chars { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new KanjiMeaningConfiguration());
-            modelBuilder.ApplyConfiguration(new ExampleMeaningConfiguration());
+            //modelBuilder.ApplyConfiguration(new KanjiMeaningConfiguration());
+            //modelBuilder.ApplyConfiguration(new ExampleMeaningConfiguration());
         }
     }
 }

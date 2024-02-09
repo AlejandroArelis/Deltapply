@@ -8,15 +8,15 @@ namespace Deltapply.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<KanjiMeaning> builder)
         {
-            builder.HasKey(km => km.Id);
+            //builder.HasKey(km => km.Id);
 
-            builder.HasOne(km => km.Kanji)
-                .WithMany(k => k.Meanings)
-                .HasForeignKey(km => km.KanjiId);
+            //builder.HasOne(km => km.Kanji)
+            //    .WithMany(k => k.Meanings)
+            //    .HasForeignKey(km => km.KanjiId);
 
-            builder.HasOne(km => km.Meaning)
-                .WithMany(m => m.Kanjis)
-                .HasForeignKey(km => km.MeaningId);
+            //builder.HasOne(km => km.Meaning)
+            //    .WithMany(m => m.Kanjis)
+            //    .HasForeignKey(km => km.MeaningId);
         }
     }
 }

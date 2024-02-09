@@ -1,12 +1,11 @@
-﻿namespace Deltapply.Models.Nihongo.Kanjis
+﻿using Deltapply.Models.General;
+
+namespace Deltapply.Models.Nihongo.Kanjis
 {
-    public class KanjiMeaning
+    public class KanjiMeaning:Generic
     {
-        public int Id { get; set; }
         public int KanjiId { get; set; }
-        public Kanji Kanji { get; set; }
-        public int MeaningId { get; set; }
-        public Meaning Meaning { get; set; }
+        public Kanji? Kanji { get; set; }
 
     }
 }

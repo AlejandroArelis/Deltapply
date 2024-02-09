@@ -5,20 +5,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Deltapply.Controllers.Nihongo.Kanjis
 {
-    [Route("api/nihongo/kanji/ons")]
+    [Route("api/nihongo/kanji/names")]
     [ApiController]
-    public class OnController : ControllerBase
+    public class NameController : ControllerBase
     {
         private readonly ApplicationDBContext _dbContext;
 
-        public OnController(ApplicationDBContext dbContext) => _dbContext = dbContext;
+        public NameController(ApplicationDBContext dbContext) => _dbContext = dbContext;
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
             try
             {
-                var data = await _dbContext.Ons
+                var data = await _dbContext.Names
                     .Where(obj => obj.KanjiId == id)
                     .ToListAsync();
                 return Ok(data);
@@ -34,7 +34,7 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
         {
             if (ModelState.IsValid)
             {
-                bool exists = await _dbContext.Ons.AnyAsync(item => item.Name == obj.Name && item.KanjiId == obj.KanjiId);
+                bool exists = await _dbContext.Names.AnyAsync(item => item.Name == obj.Name && item.KanjiId == obj.KanjiId);
 
                 if(!exists)
                 {
@@ -53,14 +53,14 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var obj = await _dbContext.Ons.FindAsync(id);
+            var obj = await _dbContext.Names.FindAsync(id);
 
             if (obj == null)
             {
                 return NotFound();
             }
 
-            _dbContext.Ons.Remove(obj);
+            _dbContext.Names.Remove(obj);
             await _dbContext.SaveChangesAsync();
 
             return NoContent();
