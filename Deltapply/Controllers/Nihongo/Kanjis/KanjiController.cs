@@ -1,4 +1,6 @@
-﻿using Deltapply.Data;
+﻿using AutoMapper;
+using Deltapply.Data;
+using Deltapply.DTO.Nihongo.Kanjis;
 using Deltapply.Models.Nihongo.Kanjis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +12,13 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
     public class KanjiController : ControllerBase
     {
         private readonly ApplicationDBContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public KanjiController(ApplicationDBContext dbContext) => _dbContext = dbContext;
+        public KanjiController(ApplicationDBContext dbContext, IMapper mapper)
+        {
+            _dbContext = dbContext;
+            _mapper = mapper;
+        }
 
         // GET: api/<KanjiController>
         [HttpGet]
@@ -49,13 +56,14 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
 
         // POST api/<KanjiController>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Kanji kanji)
+        public async Task<IActionResult> Post([FromForm] KanjiDTO kanjiDTO)
         {
             if (ModelState.IsValid)
             {
+                var kanji = _mapper.Map<Kanji>(kanjiDTO);
                 _dbContext.Kanjis.Add(kanji);
                 await _dbContext.SaveChangesAsync();
-                return CreatedAtAction(nameof(Get), new { id = kanji.Id }, kanji);
+                return Ok();
             }
 
             return BadRequest(ModelState);

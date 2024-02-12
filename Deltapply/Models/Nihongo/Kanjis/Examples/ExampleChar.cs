@@ -5,7 +5,6 @@ namespace Deltapply.Models.Nihongo.Kanjis.Examples
 {
     public class ExampleChar : Generic
     {
-        //public int KanjiId { get; set; }
         public int ExampleId { get; set; }
 
         public Example? Example { get; set; }

@@ -37,7 +37,7 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
         {
             if (ModelState.IsValid)
             {
-                bool exists = await _dbContext.Kuns.AnyAsync(item => item.Name == obj.Name && item.KanjiId == obj.KanjiId);
+                bool exists = await _dbContext.Kuns.AnyAsync(item => item.Text == obj.Text && item.KanjiId == obj.KanjiId);
 
                 if (!exists)
                 {
@@ -47,7 +47,7 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
                 }
                 else
                 {
-                    return BadRequest($"{obj.Name} ya se encuentra registrado");
+                    return BadRequest($"{obj.Text} ya se encuentra registrado");
                 }
             }
 

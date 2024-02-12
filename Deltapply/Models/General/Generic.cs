@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Deltapply.DTO.General;
+using System.ComponentModel.DataAnnotations;
 
 namespace Deltapply.Models.General
 {
-    public class Generic
+    public class Generic : GenericDTO
     {
         [Key]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
     }
 }
