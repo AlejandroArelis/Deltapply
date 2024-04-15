@@ -7,7 +7,7 @@ namespace Deltapply.Models.Nihongo.Kanjis
     {
         [Key]
         public int Id { get; set; }
-        public char Char { get; set; }
+        public char Text { get; set; }
         public string Image { get; set; }
         public int Jlpt { get; set; }
         public bool Checked { get; set; } = false;

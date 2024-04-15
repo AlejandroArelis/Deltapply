@@ -1,44 +1,69 @@
 ﻿using AutoMapper;
 using Deltapply.DTO.Nihongo.Kanjis;
 using Deltapply.Models.Nihongo.Kanjis;
-using Deltapply.Repositories.Nihongo.Interfaces;
+using Deltapply.Repositories.Nihongo;
 
 namespace Deltapply.Services.Nihongo
 {
     public class KanjiService
     {
-        private readonly IKanjiRepository _kanjiRepository;
+        private readonly KanjiRepository _kanjiRepository;
         private readonly IMapper _mapper;
 
-        public KanjiService(IKanjiRepository kanjiRepository, IMapper mapper)
+        public KanjiService(KanjiRepository kanjiRepository, IMapper mapper)
         {
             _kanjiRepository = kanjiRepository;
             _mapper = mapper;
         }
 
-        public async Task<List<KanjiDTO>> GetAllKanjis()
+        public async Task<List<Kanji>> GetAll()
         {
-            var kanjis = await _kanjiRepository.GetAllKanjis();
-            return _mapper.Map<List<KanjiDTO>>(kanjis);
+            var objects = await _kanjiRepository.GetAll();
+            //return _mapper.Map<List<KanjiDTO>>(objects);
+            return objects;
         }
 
-        public async Task<KanjiDTO> GetKanjiById(int id)
+        public async Task<Kanji> GetById(int id)
         {
-            var kanji = await _kanjiRepository.GetKanjiById(id);
-            if (kanji == null) return null;
-            return _mapper.Map<KanjiDTO>(kanji);
+            var obj = await _kanjiRepository.GetById(id);
+            if (obj == null)
+                return null;
+            //return _mapper.Map<KanjiDTO>(obj);
+            return obj;
         }
 
-        public async Task<KanjiDTO> CreateKanji(KanjiDTO kanjiDTO)
+        public async Task<Kanji> Post(KanjiDTO objectDTO)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    throw new ArgumentException("Kanji data is invalid");
-            //}
+            var obj = _mapper.Map<Kanji>(objectDTO);
 
-            var kanji = _mapper.Map<Kanji>(kanjiDTO);
-            var createdKanji = await _kanjiRepository.CreateKanji(kanji);
-            return _mapper.Map<KanjiDTO>(createdKanji);
+            // Validar que no exista otro objeto con el mismo Text ni elementos repetidos en las listas
+            var created = await _kanjiRepository.Post(obj);
+            //return _mapper.Map<KanjiDTO>(created);
+            return created;
+        }
+
+        public async Task<Kanji> Put(Kanji kanji)
+        {
+            var exists = await _kanjiRepository.Exists(kanji.Id);
+
+            if (!exists)
+                return null;
+
+            // Validar que no exista otro objeto con el mismo Text ni elementos repetidos en las listas
+
+            var updated = await _kanjiRepository.Put(kanji);
+            return updated;
+        }
+
+        public async Task<bool> Delete(Kanji obj)
+        {
+            var exists = await _kanjiRepository.Exists(obj.Id);
+
+            if (!exists)
+                return false;
+
+            await _kanjiRepository.Delete(obj);
+            return true;
         }
     }
 }

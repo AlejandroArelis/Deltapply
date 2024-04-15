@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Deltapply.Repositories.Nihongo
 {
-    public class KanjiRepository: IKanjiRepository
+    public class KanjiRepository: IRepository<Kanji>
     {
         private readonly ApplicationDBContext _dbContext;
 
@@ -15,17 +15,12 @@ namespace Deltapply.Repositories.Nihongo
             _dbContext = dbContext;
         }
 
-        public Task<Kanji> CreateKanji(Kanji kanji)
+        public async Task<bool> Exists(int id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Kanjis.AnyAsync(k => k.Id == id);
         }
 
-        public Task DeleteKanji(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<Kanji>> GetAllKanjis()
+        public async Task<List<Kanji>> GetAll()
         {
             return await _dbContext.Kanjis
                 .Include(k => k.Names)
@@ -36,7 +31,7 @@ namespace Deltapply.Repositories.Nihongo
                 .ToListAsync();
         }
 
-        public async Task<Kanji> GetKanjiById(int id)
+        public async Task<Kanji> GetById(int id)
         {
             var kanji = await _dbContext.Kanjis
                 .Include(k => k.Names)
@@ -49,9 +44,24 @@ namespace Deltapply.Repositories.Nihongo
             return kanji;
         }
 
-        public async Task UpdateKanji(Kanji kanji)
+        public async Task<Kanji> Post(Kanji kanji)
         {
-            throw new NotImplementedException();
+            _dbContext.Kanjis.Add(kanji);
+            await _dbContext.SaveChangesAsync();
+            return kanji;
+        }
+
+        public async Task<Kanji> Put(Kanji kanji)
+        {
+            _dbContext.Kanjis.Update(kanji);
+            await _dbContext.SaveChangesAsync();
+            return kanji;
+        }
+
+        public async Task Delete(Kanji kanji)
+        {
+            _dbContext.Kanjis.Remove(kanji);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

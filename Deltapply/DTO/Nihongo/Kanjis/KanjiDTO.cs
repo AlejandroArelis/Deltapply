@@ -5,7 +5,7 @@ namespace Deltapply.DTO.Nihongo.Kanjis
 {
     public class KanjiDTO
     {
-        public char Char { get; set; }
+        public char Text { get; set; }
         public string Image { get; set; }
         public int Jlpt { get; set; }
         public bool Checked { get; set; } = false;

@@ -5,6 +5,7 @@ using Deltapply.Models.Nihongo.Kanjis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Deltapply.Services.Nihongo;
+using Azure;
 
 namespace Deltapply.Controllers.Nihongo.Kanjis
 {
@@ -19,96 +20,66 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
             _kanjiService = kanjiService;
         }
 
-        // GET: api/<KanjiController>
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(await _kanjiService.GetAllKanjis());
+            var response = await _kanjiService.GetAll();
+
+            if (response.Count == 0)
+                return NoContent();
+
+            return Ok(await _kanjiService.GetAll());
         }
 
-        // GET api/<KanjiController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            //var kanji = await _dbContext.Kanjis
-            //    .Include(k => k.Names)
-            //    .Include(k => k.Kuns)
-            //    .Include(k => k.Ons)
-            //    .Include(k => k.Meanings)
-            //    .Include(k => k.Examples)
-            //    .FirstOrDefaultAsync(k => k.Id == id);
+            var response = await _kanjiService.GetById(id);
 
-            //if (kanji == null)
-            //{
-            //    return NotFound();
-            //}
+            if(response == null)
+                return NotFound();
 
-            //return Ok(kanji);
+            return Ok(response);
         }
 
-        // POST api/<KanjiController>
         [HttpPost]
-        public async Task<IActionResult> Post([FromForm] KanjiDTO kanjiDTO)
+        public async Task<IActionResult> Post([FromForm] KanjiDTO objectDTO)
         {
-            //if (ModelState.IsValid)
-            //{
-            //    var kanji = _mapper.Map<Kanji>(kanjiDTO);
-            //    _dbContext.Kanjis.Add(kanji);
-            //    await _dbContext.SaveChangesAsync();
-            //    return Ok();
-            //}
+            if (ModelState.IsValid)
+            {
+                var response = await _kanjiService.Post(objectDTO);
 
-            //return BadRequest(ModelState);
+                var uri = new Uri($"{Request.Scheme}://{Request.Host}:{{Port}}/knjis/{response.Id}"); // Falta mostrar el puerto
+                return Created(uri, response);
+            }
+
+            return BadRequest(ModelState);
         }
 
-        // PUT api/<KanjiController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Kanji updatedKanji)
+        public async Task<IActionResult> Put([FromBody] Kanji objectDTO)
         {
-            //if (id != updatedKanji.Id)
-            //{
-            //    return BadRequest();
-            //}
+            if (ModelState.IsValid)
+            {
+                var response = await _kanjiService.Put(objectDTO);
 
-            //var existingKanji = await _dbContext.Kanjis.FindAsync(id);
-            //if (existingKanji == null)
-            //{
-            //    return NotFound();
-            //}
+                if (response == null)
+                    return NotFound();
+                return Ok(response);
+            }
 
-            //_dbContext.Entry(existingKanji).CurrentValues.SetValues(updatedKanji);
-
-            //try
-            //{
-            //    await _dbContext.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    return StatusCode(500, "Error al actualizar la entidad.");
-            //}
-
-            //return NoContent();
+            return BadRequest(ModelState);
         }
 
-        // DELETE api/<KanjiController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Kanji obj)
         {
-            //var kanji = await _dbContext.Kanjis.FindAsync(id);
+            var response = await _kanjiService.Delete(obj);
 
-            //if (kanji == null)
-            //{
-            //    return NotFound();
-            //}
+            if (!response)
+                return NotFound();
 
-            //_dbContext.Kanjis.Remove(kanji);
-            //await _dbContext.SaveChangesAsync();
-
-            //return NoContent();
+            return NoContent();
         }
-
-        // Ejemplo de manejo global de excepciones
-        //[Route("error")]
-        //public IActionResult Error() => Problem();
     }
 }
