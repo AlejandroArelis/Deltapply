@@ -1,11 +1,7 @@
-﻿using AutoMapper;
-using Deltapply.Data;
-using Deltapply.DTO.Nihongo.Kanjis;
+﻿using Deltapply.DTO.Nihongo.Kanjis;
 using Deltapply.Models.Nihongo.Kanjis;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Deltapply.Services.Nihongo;
-using Azure;
 
 namespace Deltapply.Controllers.Nihongo.Kanjis
 {
@@ -28,7 +24,7 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
             if (response.Count == 0)
                 return NoContent();
 
-            return Ok(await _kanjiService.GetAll());
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
@@ -49,14 +45,15 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
             {
                 var response = await _kanjiService.Post(objectDTO);
 
-                var uri = new Uri($"{Request.Scheme}://{Request.Host}:{{Port}}/knjis/{response.Id}"); // Falta mostrar el puerto
-                return Created(uri, response);
+                //var uri = new Uri($"{Request.Scheme}://{Request.Host}:{{Port}}/knjis/{response.Id}"); // Falta mostrar el puerto
+                //return Created(uri, response);
+                return Ok(response);
             }
 
             return BadRequest(ModelState);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<IActionResult> Put([FromBody] Kanji objectDTO)
         {
             if (ModelState.IsValid)
@@ -72,9 +69,9 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Kanji obj)
+        public async Task<IActionResult> Delete(int id)
         {
-            var response = await _kanjiService.Delete(obj);
+            var response = await _kanjiService.Delete(id);
 
             if (!response)
                 return NotFound();

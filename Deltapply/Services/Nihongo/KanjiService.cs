@@ -55,11 +55,11 @@ namespace Deltapply.Services.Nihongo
             return updated;
         }
 
-        public async Task<bool> Delete(Kanji obj)
+        public async Task<bool> Delete(int id)
         {
-            var exists = await _kanjiRepository.Exists(obj.Id);
+            var obj = await _kanjiRepository.GetById(id);
 
-            if (!exists)
+            if (obj == null)
                 return false;
 
             await _kanjiRepository.Delete(obj);

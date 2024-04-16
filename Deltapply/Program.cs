@@ -1,13 +1,15 @@
 using Deltapply.Data;
+using Deltapply.Repositories.Nihongo;
+using Deltapply.Repositories.Nihongo.Interfaces;
+using Deltapply.Services.Nihongo;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using AutoMapper;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
+builder.Services.AddScoped<KanjiRepository>();
+builder.Services.AddScoped<KanjiService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin",
