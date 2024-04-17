@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Deltapply.DTO.General;
 using Deltapply.DTO.Nihongo.Kanjis;
+using Deltapply.Migrations;
 using Deltapply.Models.Nihongo.Kanjis;
 using Deltapply.Repositories.Nihongo;
 
@@ -36,7 +38,29 @@ namespace Deltapply.Services.Nihongo
         {
             var obj = _mapper.Map<Kanji>(objectDTO);
 
-            // Validar que no exista otro objeto con el mismo Text ni elementos repetidos en las listas
+            var exists = await _kanjiRepository.Exists("Text", objectDTO.Text);
+
+            if (exists)
+                return null;
+
+            if(objectDTO.Kuns != null)
+            {
+                objectDTO.Kuns = objectDTO.Kuns.GroupBy(x => x.Value) // Agrupa los registros
+                        .Select(grp => grp.First()).ToList(); // Selecciona solo el primer elemento de cada grupo y lo guarda en una lista
+            }
+
+            if (objectDTO.Ons != null)
+            {
+                objectDTO.Ons = objectDTO.Ons.GroupBy(x => x.Value)
+                        .Select(grp => grp.First()).ToList();
+            }
+
+            if (objectDTO.Meanings != null)
+            {
+                objectDTO.Meanings = objectDTO.Meanings.GroupBy(x => x.Value)
+                        .Select(grp => grp.First()).ToList();
+            }
+
             var created = await _kanjiRepository.Post(obj);
             //return _mapper.Map<KanjiDTO>(created);
             return created;
@@ -44,12 +68,15 @@ namespace Deltapply.Services.Nihongo
 
         public async Task<Kanji> Put(Kanji kanji)
         {
-            var exists = await _kanjiRepository.Exists(kanji.Id);
+            var exists = await _kanjiRepository.Exists("Id", kanji.Id);
 
             if (!exists)
                 return null;
 
-            // Validar que no exista otro objeto con el mismo Text ni elementos repetidos en las listas
+            exists = await _kanjiRepository.Exists("Text", kanji.Text);
+
+            if (exists)
+                return null;
 
             var updated = await _kanjiRepository.Put(kanji);
             return updated;

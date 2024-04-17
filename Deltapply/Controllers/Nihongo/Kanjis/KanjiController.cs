@@ -45,6 +45,9 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
             {
                 var response = await _kanjiService.Post(objectDTO);
 
+                if (response == null)
+                    return BadRequest($"El kanji {objectDTO.Text} ya existe");
+
                 //var uri = new Uri($"{Request.Scheme}://{Request.Host}:{{Port}}/knjis/{response.Id}"); // Falta mostrar el puerto
                 //return Created(uri, response);
                 return Ok(response);

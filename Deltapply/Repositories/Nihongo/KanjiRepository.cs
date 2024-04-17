@@ -1,7 +1,6 @@
 ﻿using Deltapply.Data;
 using Deltapply.Models.Nihongo.Kanjis;
 using Deltapply.Repositories.Nihongo.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace Deltapply.Repositories.Nihongo
@@ -13,11 +12,6 @@ namespace Deltapply.Repositories.Nihongo
         public KanjiRepository(ApplicationDBContext dbContext)
         {
             _dbContext = dbContext;
-        }
-
-        public async Task<bool> Exists(int id)
-        {
-            return await _dbContext.Kanjis.AnyAsync(k => k.Id == id);
         }
 
         public async Task<List<Kanji>> GetAll()
@@ -62,6 +56,11 @@ namespace Deltapply.Repositories.Nihongo
         {
             _dbContext.Kanjis.Remove(kanji);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public Task<bool> Exists(string property, object value)
+        {
+            return _dbContext.Kanjis.AnyAsync(k => EF.Property<object>(k, property) == value);
         }
     }
 }
