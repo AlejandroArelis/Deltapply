@@ -39,7 +39,7 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromForm] KanjiDTO objectDTO)
+        public async Task<IActionResult> Post(KanjiDTO objectDTO)
         {
             if (ModelState.IsValid)
             {
@@ -50,14 +50,14 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
 
                 //var uri = new Uri($"{Request.Scheme}://{Request.Host}:{{Port}}/knjis/{response.Id}"); // Falta mostrar el puerto
                 //return Created(uri, response);
-                return Ok(response);
+                return Ok(response.Id);
             }
 
             return BadRequest(ModelState);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] Kanji objectDTO)
+        public async Task<IActionResult> Put(Kanji objectDTO)
         {
             if (ModelState.IsValid)
             {

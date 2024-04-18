@@ -9,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
 builder.Services.AddScoped<KanjiRepository>();
 builder.Services.AddScoped<KanjiService>();
+
+builder.Services.AddScoped<KunRepository>();
+builder.Services.AddScoped<KunService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin",

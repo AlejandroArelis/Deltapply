@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Deltapply.DTO.General;
 using Deltapply.DTO.Nihongo.Kanjis;
-using Deltapply.Migrations;
 using Deltapply.Models.Nihongo.Kanjis;
 using Deltapply.Repositories.Nihongo;
 
@@ -10,17 +8,19 @@ namespace Deltapply.Services.Nihongo
     public class KanjiService
     {
         private readonly KanjiRepository _kanjiRepository;
+        private readonly KunRepository _kunRepository;
         private readonly IMapper _mapper;
 
-        public KanjiService(KanjiRepository kanjiRepository, IMapper mapper)
+        public KanjiService(KanjiRepository kanjiRepository, KunRepository kunRepository, IMapper mapper)
         {
             _kanjiRepository = kanjiRepository;
+            _kunRepository = kunRepository;
             _mapper = mapper;
         }
 
         public async Task<List<Kanji>> GetAll()
         {
-            var objects = await _kanjiRepository.GetAll();
+            var objects = await _kanjiRepository.GetAll(null);
             //return _mapper.Map<List<KanjiDTO>>(objects);
             return objects;
         }
@@ -36,9 +36,8 @@ namespace Deltapply.Services.Nihongo
 
         public async Task<Kanji> Post(KanjiDTO objectDTO)
         {
-            var obj = _mapper.Map<Kanji>(objectDTO);
 
-            var exists = await _kanjiRepository.Exists("Text", objectDTO.Text);
+            var exists = await _kanjiRepository.Exists("Text", objectDTO.Text, null);
 
             if (exists)
                 return null;
@@ -61,24 +60,76 @@ namespace Deltapply.Services.Nihongo
                         .Select(grp => grp.First()).ToList();
             }
 
+            if (objectDTO.Names != null)
+            {
+                objectDTO.Names = objectDTO.Names.GroupBy(x => x.Value)
+                        .Select(grp => grp.First()).ToList();
+            } 
+
+            var obj = _mapper.Map<Kanji>(objectDTO);
             var created = await _kanjiRepository.Post(obj);
             //return _mapper.Map<KanjiDTO>(created);
             return created;
         }
 
-        public async Task<Kanji> Put(Kanji kanji)
+        public async Task<Kanji> Put(Kanji obj)
         {
-            var exists = await _kanjiRepository.Exists("Id", kanji.Id);
+            var exists = await _kanjiRepository.Exists("Id", obj.Id, null);
 
             if (!exists)
                 return null;
 
-            exists = await _kanjiRepository.Exists("Text", kanji.Text);
+            //// Eliminación de posibles repetidos
+            //if (obj.Kuns != null)
+            //{
+            //    obj.Kuns = obj.Kuns.GroupBy(x => x.Value) // Agrupa los registros
+            //            .Select(grp => grp.First()).ToList(); // Selecciona solo el primer elemento de cada grupo y lo guarda en una lista
 
-            if (exists)
-                return null;
+            //    List<Kun> kunsAux = new List<Kun>();
+            //    foreach(var kun in obj.Kuns)
+            //    {
+            //        exists = await _kunRepository.Exists("Value", kun.Value, obj.Id);
 
-            var updated = await _kanjiRepository.Put(kanji);
+            //        if (!exists)
+            //            kunsAux.Add(kun);
+            //    }
+            //}
+
+            //if (obj.Ons != null)
+            //{
+            //    obj.Ons = obj.Ons.GroupBy(x => x.Value)
+            //            .Select(grp => grp.First()).ToList();
+
+            //    List<On> onsAux = new List<On>();
+            //    foreach (var on in obj.Ons)
+            //    {
+            //        exists = await _kunRepository.Exists("Value", on.Value, obj.Id);
+
+            //        if (!exists)
+            //            onsAux.Add(on);
+            //    }
+
+            //if (obj.Meanings != null)
+            //{
+            //    obj.Meanings = obj.Meanings.GroupBy(x => x.Value)
+            //            .Select(grp => grp.First()).ToList();
+
+            //    List<KanjiMeaning> meaningAux = new List<KanjiMeaning>();
+            //    foreach (var meaning in obj.Meanings)
+            //    {
+            //        exists = await _kunRepository.Exists("Value", meaning.Value, obj.Id);
+
+            //        if (!exists)
+            //            meaningAux.Add(meaning);
+            //    }
+            //}
+
+            //    obj.Kuns = null;
+            //    obj.Ons = null;
+            //    obj.Meanings = null;
+            //    obj.Examples = null;
+
+            var updated = await _kanjiRepository.Put(obj);
             return updated;
         }
 

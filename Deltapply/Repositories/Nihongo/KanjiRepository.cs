@@ -14,7 +14,7 @@ namespace Deltapply.Repositories.Nihongo
             _dbContext = dbContext;
         }
 
-        public async Task<List<Kanji>> GetAll()
+        public async Task<List<Kanji>> GetAll(int? id)
         {
             return await _dbContext.Kanjis
                 .Include(k => k.Names)
@@ -58,7 +58,7 @@ namespace Deltapply.Repositories.Nihongo
             await _dbContext.SaveChangesAsync();
         }
 
-        public Task<bool> Exists(string property, object value)
+        public Task<bool> Exists(string property, object value, int? parent)
         {
             return _dbContext.Kanjis.AnyAsync(k => EF.Property<object>(k, property) == value);
         }
