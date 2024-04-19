@@ -1,54 +1,65 @@
-﻿using Deltapply.Data;
-using Deltapply.Models;
+﻿using Deltapply.DTO.Nihongo.Kanjis;
 using Deltapply.Models.Nihongo.Kanjis;
+using Deltapply.Services.Nihongo;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Deltapply.Controllers.Nihongo.Kanjis
 {
-    [Route("api/nihongo/kanji/kuns")]
+    [Route("api/nihongo/[controller]")]
     [ApiController]
     public class KunController : ControllerBase
     {
-        private readonly ApplicationDBContext _dbContext;
+        private readonly KunService _service;
 
-        public KunController(ApplicationDBContext dbContext) => _dbContext = dbContext;
+        public KunController(KunService service) => _service = service;
+
+        [HttpGet("kanji/{parentId}")]
+        public async Task<IActionResult> GetAll(int parentId)
+        {
+            var response = await _service.GetAll(parentId);
+
+            if (response.Count == 0)
+                return NoContent();
+
+            return Ok(response);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            try
-            {
-                var data = await _dbContext.Kuns
-                    .Where(obj => obj.KanjiId == id)
-                    .ToListAsync();
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-            }
+            var response = await _service.GetById(id);
+
+            if (response == null)
+                return NotFound();
+
+            return Ok(response);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Kun obj)
+        public async Task<IActionResult> Post(KunDTO obj)
         {
             if (ModelState.IsValid)
             {
-                bool exists = await _dbContext.Kuns.AnyAsync(item => item.Text == obj.Text && item.KanjiId == obj.KanjiId);
+                var response = await _service.Post(obj);
 
-                if (!exists)
-                {
-                    _dbContext.Kuns.Add(obj);
-                    await _dbContext.SaveChangesAsync();
-                    return CreatedAtAction(nameof(Get), new { id = obj.Id }, obj);
-                }
-                else
-                {
-                    return BadRequest($"{obj.Text} ya se encuentra registrado");
-                }
+                if (response == null)
+                    return BadRequest($"La llectura kun'yomi {obj.Text} ya existe");
+                return Ok(response.Id);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(Kun obj)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _service.Put(obj);
+
+                if (response == null)
+                    return NotFound();
+                return Ok(response);
             }
 
             return BadRequest(ModelState);
@@ -57,15 +68,10 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var kun = await _dbContext.Kuns.FindAsync(id);
+            var response = await _service.Delete(id);
 
-            if (kun == null)
-            {
+            if (!response)
                 return NotFound();
-            }
-
-            _dbContext.Kuns.Remove(kun);
-            await _dbContext.SaveChangesAsync();
 
             return NoContent();
         }

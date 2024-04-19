@@ -1,50 +1,65 @@
-﻿using Deltapply.Data;
+﻿using Deltapply.DTO.Nihongo.Kanjis;
 using Deltapply.Models.Nihongo.Kanjis;
+using Deltapply.Services.Nihongo;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Deltapply.Controllers.Nihongo.Kanjis
 {
-    [Route("api/nihongo/kanji/ons")]
+    [Route("api/nihongo/[controller]")]
     [ApiController]
     public class OnController : ControllerBase
     {
-        private readonly ApplicationDBContext _dbContext;
+        private readonly OnService _service;
 
-        public OnController(ApplicationDBContext dbContext) => _dbContext = dbContext;
+        public OnController(OnService service) => _service = service;
+
+        [HttpGet("kanji/{parentId}")]
+        public async Task<IActionResult> GetAll(int parentId)
+        {
+            var response = await _service.GetAll(parentId);
+
+            if (response.Count == 0)
+                return NoContent();
+
+            return Ok(response);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            try
-            {
-                var data = await _dbContext.Ons
-                    .Where(obj => obj.KanjiId == id)
-                    .ToListAsync();
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-            }
+            var response = await _service.GetById(id);
+
+            if (response == null)
+                return NotFound();
+
+            return Ok(response);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] On obj)
+        public async Task<IActionResult> Post(OnDTO obj)
         {
             if (ModelState.IsValid)
             {
-                bool exists = await _dbContext.Ons.AnyAsync(item => item.Text == obj.Text && item.KanjiId == obj.KanjiId);
+                var response = await _service.Post(obj);
 
-                if(!exists)
-                {
-                    _dbContext.Ons.Add(obj);
-                    await _dbContext.SaveChangesAsync();
-                    return CreatedAtAction(nameof(Get), new { id = obj.Id }, obj);
-                } else
-                {
-                    return BadRequest($"{obj.Text} ya se encuentra registrado");
-                }
+                if (response == null)
+                    return BadRequest($"La llectura on'yomi {obj.Text} ya existe");
+                return Ok(response.Id);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(On obj)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _service.Put(obj);
+
+                if (response == null)
+                    return NotFound();
+                return Ok(response);
             }
 
             return BadRequest(ModelState);
@@ -53,15 +68,10 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var obj = await _dbContext.Ons.FindAsync(id);
+            var response = await _service.Delete(id);
 
-            if (obj == null)
-            {
+            if (!response)
                 return NotFound();
-            }
-
-            _dbContext.Ons.Remove(obj);
-            await _dbContext.SaveChangesAsync();
 
             return NoContent();
         }

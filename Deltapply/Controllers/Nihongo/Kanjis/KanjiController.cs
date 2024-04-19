@@ -11,10 +11,7 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
     {
         private readonly KanjiService _kanjiService;
 
-        public KanjiController(KanjiService kanjiService)
-        {
-            _kanjiService = kanjiService;
-        }
+        public KanjiController(KanjiService kanjiService) => _kanjiService = kanjiService;
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -39,17 +36,14 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(KanjiDTO objectDTO)
+        public async Task<IActionResult> Post(KanjiDTO obj)
         {
             if (ModelState.IsValid)
             {
-                var response = await _kanjiService.Post(objectDTO);
+                var response = await _kanjiService.Post(obj);
 
                 if (response == null)
-                    return BadRequest($"El kanji {objectDTO.Text} ya existe");
-
-                //var uri = new Uri($"{Request.Scheme}://{Request.Host}:{{Port}}/knjis/{response.Id}"); // Falta mostrar el puerto
-                //return Created(uri, response);
+                    return BadRequest($"El kanji {obj.Text} ya existe");
                 return Ok(response.Id);
             }
 
@@ -57,11 +51,11 @@ namespace Deltapply.Controllers.Nihongo.Kanjis
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Kanji objectDTO)
+        public async Task<IActionResult> Put(Kanji obj)
         {
             if (ModelState.IsValid)
             {
-                var response = await _kanjiService.Put(objectDTO);
+                var response = await _kanjiService.Put(obj);
 
                 if (response == null)
                     return NotFound();
